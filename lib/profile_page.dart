@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:project/User.dart';
+import 'dashboard.dart'; // Import your Dashboard screen
 
 class ProfilePage extends StatefulWidget {
+  final Widget? listView;
+  final double? total;
+  final double? moneytendered;
+  final double? change;
+
+  ProfilePage({
+    this.listView,
+    this.total,
+    this.moneytendered,
+    this.change,
+  });
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -12,6 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController _birthdayController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _mottoController = TextEditingController();
+  Users users = Users();
 
   bool _editMode = false;
 
@@ -29,6 +44,20 @@ class _ProfilePageState extends State<ProfilePage> {
               });
             },
           ),
+          if (_editMode) // Show "Ok" button only in edit mode
+            TextButton(
+              onPressed: () {
+                // Navigate to the Dashboard screen when "Ok" is clicked
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Dashboard()),
+                );
+              },
+              child: Text(
+                'Ok',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -60,6 +89,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Text('Submit'),
               ),
             ],
+            Card(
+              child: Column(
+                children: [
+                  Text("Recent Purchased"),
+                  if (widget.listView != null) widget.listView!,
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -69,17 +106,15 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget buildProfileDetails() {
     return Column(
       children: [
-        Text('Name: ${_nameController.text}'),
+        Text(
+            'Name:  ${users.getFirstName()}  ${users.getMiddleName()} ${users.getLastName()}'),
         SizedBox(height: 10),
-        Text('Age: ${_ageController.text}'),
+        Text('Email: ${users.getEmail()}'),
         SizedBox(height: 10),
-        Text('Address: ${_addressController.text}'),
+        Text('Contact Number: ${users.getCPNumber()}'),
         SizedBox(height: 10),
-        Text('Birthday: ${_birthdayController.text}'),
+        Text('Username: ${users.getUsername()}'),
         SizedBox(height: 10),
-        Text('Email: ${_emailController.text}'),
-        SizedBox(height: 10),
-        Text('Motto in Life: ${_mottoController.text}'),
       ],
     );
   }

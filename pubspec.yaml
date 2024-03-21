@@ -30,9 +30,9 @@ environment:
 dependencies:
   http: ^0.13.3
   shared_preferences: ^2.0.10
-
   flutter:
     sdk: flutter
+  badges: ^2.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
