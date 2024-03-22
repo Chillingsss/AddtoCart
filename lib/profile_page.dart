@@ -62,42 +62,55 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('images/coke.jpg'),
-            ),
-            SizedBox(height: 20),
-            if (!_editMode) ...[
-              // Display profile details when not in edit mode
-              buildProfileDetails(),
-            ] else ...[
-              // Display input fields when in edit mode
-              buildInputField("Name", _nameController),
-              buildInputField("Age", _ageController),
-              buildInputField("Address", _addressController),
-              buildInputField("Birthday", _birthdayController),
-              buildInputField("Email", _emailController),
-              buildInputField("Motto in Life", _mottoController),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('images/pogi.jpg'),
+              ),
               SizedBox(height: 20),
-              ElevatedButton(
+              if (!_editMode) ...[
+                // Display profile details when not in edit mode
+                buildProfileDetails(),
+              ] else ...[
+                // Display input fields when in edit mode
+                buildInputField("Name", _nameController),
+                buildInputField("Age", _ageController),
+                buildInputField("Address", _addressController),
+                buildInputField("Birthday", _birthdayController),
+                buildInputField("Email", _emailController),
+                buildInputField("Motto in Life", _mottoController),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    submitProfile();
+                  },
+                  child: Text('Submit'),
+                ),
+              ],
+              Card(
+                child: Column(
+                  children: [
+                    Text("Recent Purchased"),
+                    if (widget.listView != null) widget.listView!,
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              MaterialButton(
                 onPressed: () {
-                  submitProfile();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Dashboard()),
+                  );
                 },
-                child: Text('Submit'),
+                child: Text('OK'),
               ),
             ],
-            Card(
-              child: Column(
-                children: [
-                  Text("Recent Purchased"),
-                  if (widget.listView != null) widget.listView!,
-                ],
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );

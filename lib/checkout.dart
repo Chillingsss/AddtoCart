@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:project/dashboard.dart';
 import 'package:project/profile_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Checkout extends StatefulWidget {
   final String name;
   final String address;
+  final int contactNumber;
   final Widget listView;
   final double total;
   final double? moneytendered;
@@ -17,6 +18,7 @@ class Checkout extends StatefulWidget {
     required this.total,
     required this.moneytendered,
     required this.change,
+    required this.contactNumber,
   });
 
   @override
@@ -42,16 +44,20 @@ class _CheckoutState extends State<Checkout> {
             ),
             Text(
               "Name: ${widget.name}",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 15),
             ),
             Text(
               "Address: ${widget.address}",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 15),
+            ),
+            Text(
+              "Contact Number: ${widget.contactNumber}",
+              style: TextStyle(fontSize: 15),
             ),
             widget.listView,
             Text(
               "Total: ${widget.total}",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 15),
             ),
             Text(
               "Money Tendered: " + _paymentController.text,
@@ -60,7 +66,7 @@ class _CheckoutState extends State<Checkout> {
                 ? const Text("")
                 : Text(
                     changeLabel,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
             SizedBox(
               width: 500,
@@ -80,7 +86,8 @@ class _CheckoutState extends State<Checkout> {
                     change = int.parse(_paymentController.text) - widget.total;
                     changeLabel = "Change: ${change.toString()}";
                   });
-                  showReceiptDialog(); // Show the receipt dialog
+                  showReceiptDialog(
+                      widget.name, widget.address, widget.listView);
                 } else {
                   setState(() {
                     changeLabel = "Payment is not enough";
@@ -97,7 +104,7 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 
-  void showReceiptDialog() {
+  void showReceiptDialog(String name, String address, Widget listView) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -118,13 +125,13 @@ class _CheckoutState extends State<Checkout> {
                     ),
                   ),
                   Text(
-                    "Name: ${widget.name}",
+                    "Name: $name",
                     style: TextStyle(
                       fontSize: 14,
                     ),
                   ),
                   Text(
-                    "Location: ${widget.address}",
+                    "Location: $address",
                     style: TextStyle(
                       fontSize: 14,
                     ),
@@ -133,7 +140,7 @@ class _CheckoutState extends State<Checkout> {
                     width: 500,
                     height: 500,
                     child: Expanded(
-                      child: widget.listView,
+                      child: listView,
                     ),
                   ),
                   Text(
@@ -166,12 +173,21 @@ class _CheckoutState extends State<Checkout> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProfilePage(
-                        listView: widget.listView,
+                        listView: listView,
                       ),
                     ),
                   ); // Close the dialog
                 },
                 child: Text("OK"),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Dashboard()),
+                  );
+                },
+                child: Text('Go to Dashboard'),
               ),
             ],
           ),

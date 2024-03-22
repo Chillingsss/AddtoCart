@@ -215,6 +215,21 @@ class _SignupScreenState extends State<Signup> {
   TextEditingController retypePasswordController = TextEditingController();
 
   Future<void> signUp() async {
+    if (firstnameController.text.isEmpty ||
+        middlenameController.text.isEmpty ||
+        lastnameController.text.isEmpty ||
+        addressController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        cpnumberController.text.isEmpty ||
+        usernameController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        retypePasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
+
     String url = "http://localhost/api/register.php";
     try {
       final response = await http.post(
@@ -233,9 +248,19 @@ class _SignupScreenState extends State<Signup> {
       );
       final responseData = jsonDecode(response.body);
       if (response.statusCode == 200 && responseData['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+              SnackBar(content: Text('Registration successful')),
+            )
+            .closed
+            .then((_) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MyApp()), // Replace MyApp with your main.dart widget
+          );
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseData['message'])),
@@ -284,6 +309,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Firstname:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -295,6 +325,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Middlename:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -306,6 +341,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Lastname:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -317,6 +357,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Address:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -328,6 +373,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Email:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -339,6 +389,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Contact Number:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -350,6 +405,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Username:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -362,6 +422,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Password:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),
@@ -374,6 +439,11 @@ class _SignupScreenState extends State<Signup> {
                               decoration: InputDecoration(
                                 labelText: 'Retype Password:',
                                 border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .red), // Set border color to red
+                                ),
                               ),
                             ),
                           ),

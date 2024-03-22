@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/checkout.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'User.dart';
 
 class Store extends StatefulWidget {
@@ -15,8 +15,9 @@ class Store extends StatefulWidget {
 
 class _StoreState extends State<Store> {
   TextEditingController _nameController = TextEditingController();
-  TextEditingController _adressController = TextEditingController();
-  TextEditingController _promoCode = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _contactNumberController =
+      TextEditingController(); // Updated variable name
   Users users = Users();
 
   @override
@@ -26,7 +27,8 @@ class _StoreState extends State<Store> {
     if (users != null) {
       _nameController.text =
           '${users.getFirstName()} ${users.getMiddleName()} ${users.getLastName()}';
-      _adressController.text = '${users.getAddress()}';
+      _addressController.text = '${users.getAddress()}';
+      _contactNumberController.text = '${users.getCPNumber()}';
     }
   }
 
@@ -37,10 +39,8 @@ class _StoreState extends State<Store> {
       body: Center(
         // Center widget added here
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Align content vertically centered
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // Align content horizontally centered
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TextField(
               controller: _nameController,
@@ -55,9 +55,21 @@ class _StoreState extends State<Store> {
               height: 20,
             ),
             TextField(
-              controller: _adressController,
+              controller: _addressController,
               decoration: InputDecoration(
                 labelText: "Location",
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            TextField(
+              controller: _contactNumberController, // Corrected variable name
+              decoration: InputDecoration(
+                labelText: "Contact Number",
                 border: OutlineInputBorder(
                   borderSide: BorderSide(width: 1),
                 ),
@@ -73,7 +85,9 @@ class _StoreState extends State<Store> {
                   MaterialPageRoute(
                     builder: (BuildContext context) => Checkout(
                       name: _nameController.text,
-                      address: _adressController.text,
+                      address: _addressController.text,
+                      contactNumber: int.parse(_contactNumberController
+                          .text), // Corrected variable name
                       listView: widget.listview,
                       total: widget.total,
                       change: null,

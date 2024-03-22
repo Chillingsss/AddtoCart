@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -27,51 +28,40 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Dashboard',
-          style: TextStyle(color: Colors.white),
+        title: FlutterLogo(
+          textColor: Colors.white, // Set text color to white
+          size: 30, // Set logo size
         ),
         backgroundColor: Color.fromARGB(255, 0, 0, 0),
         iconTheme: IconThemeData(
             color: Colors.white), // Set the color of icons to white
         actions: [
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text("SHOPPING CART"),
-                    content: Column(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 500,
-                            width: 500,
-                            child: createListView(),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("SHOPPING CART"),
+                      content: Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 500,
+                              width: 500,
+                              child: createListView(),
+                            ),
                           ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Store(
-                                  listview: createListView(),
-                                  total: total,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Text("Checkout"),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-            child: Icon(Icons.shopping_cart),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              child: Icon(Icons.shopping_cart),
+            ),
           ),
           SizedBox(width: 10),
           Container(
@@ -85,6 +75,45 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check_outlined),
+            label: 'Checkout',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (int index) {
+          if (index == 2) {
+            // Assuming "Profile" is at index 2
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage()),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Store(
+                        listview: createListView(),
+                        total: total,
+                      )),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard()),
+            );
+          }
+        },
       ),
       drawer: Drawer(
         child: ListView(
@@ -112,7 +141,7 @@ class _DashboardState extends State<Dashboard> {
                 padding: const EdgeInsets.only(right: 10),
                 child: Text(
                   "PITOK",
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                 ),
               ),
               Padding(
@@ -125,377 +154,626 @@ class _DashboardState extends State<Dashboard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              coke,
-                              10,
-                              Image.asset(
-                                'images/tawas.png',
-                                height: 100,
-                                width: 100,
+                        Card(
+                          color: Color.fromARGB(255, 69, 56, 56),
+                          // Wrap the Tawas image in a Card
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                saveRecord(
+                                  coke,
+                                  10,
+                                  Image.asset(
+                                    'images/tawas.png',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'images/tawas.png',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: Text(
+                                      "Tawas",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: Text(
+                                      "₱10.00",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/tawas.png',
-                            height: 100,
-                            width: 100,
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 32.0),
-                          child: Text("Tawas"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 28.0),
-                          child: Text("₱10.00"),
                         ),
                         SizedBox(
                           height: 30,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              noodles,
-                              30,
-                              Image.asset(
-                                'images/noodles.jpg',
-                                height: 100,
-                                width: 100,
+                        Card(
+                          color: Color.fromARGB(255, 69, 56, 56),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                saveRecord(
+                                  noodles,
+                                  10,
+                                  Image.asset(
+                                    'images/noodles.jpg',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'images/noodles.jpg',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: Text(
+                                      "Noodles",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: Text(
+                                      "₱10.00",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/noodles.jpg',
-                            height: 100,
-                            width: 100,
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 22.0),
-                          child: Text("Noodles"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 25.0),
-                          child: Text("₱30.00"),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    width: 50,
+                    width: 60,
                   ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              bulad,
-                              20,
-                              Image.asset(
-                                'images/rexona.png',
-                                height: 100,
-                                width: 100,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    bulad,
+                                    20,
+                                    Image.asset(
+                                      'images/rexona.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/rexona.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text(
+                                        "Rexona",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text(
+                                        "₱20.00",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/rexona.png',
-                            height: 100,
-                            width: 100,
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1.0),
-                          child: Text("Rexona"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1.0),
-                          child: Text("₱20.00"),
                         ),
                         SizedBox(
                           height: 30,
+                          width: 30,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              shampoo,
-                              10,
-                              Image.asset(
-                                'images/shampoo.png',
-                                height: 100,
-                                width: 100,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    shampoo,
+                                    100,
+                                    Image.asset(
+                                      'images/shampoo.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/shampoo.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(
+                                        "Shampoo",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(
+                                        "₱100.00",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/shampoo.png',
-                            height: 100,
-                            width: 100,
+                            ),
                           ),
                         ),
-                        Text("Shampoo"),
-                        Text("₱10.00"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              canton,
-                              14,
-                              Image.asset(
-                                'images/chilli.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/chilli.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 5.0),
-                          child: Text("Pancit Canton"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 28.0),
-                          child: Text("₱14.00"),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              canton,
-                              14,
-                              Image.asset(
-                                'images/extra.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/extra.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 5.0),
-                          child: Text("Pancit Canton"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 25.0),
-                          child: Text("₱14.00"),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 50,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              canton,
-                              14,
-                              Image.asset(
-                                'images/sweet.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/sweet.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1.0),
-                          child: Text("Pancit Canton"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1.0),
-                          child: Text("14.00"),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              shampoo,
-                              10,
-                              Image.asset(
-                                'images/original.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/original.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Text("Pancit Canton"),
-                        Text("₱14.00"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              sanmarino,
-                              29,
-                              Image.asset(
-                                'images/sanmarino.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/sanmarino.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 15.0),
-                          child: Text("San Marino"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 28.0),
-                          child: Text("₱29.00"),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              century,
-                              34.50,
-                              Image.asset(
-                                'images/century.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/century.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: Text("Century Tuna"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 25.0),
-                          child: Text("₱34.50"),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 50,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              argentina,
-                              20,
-                              Image.asset(
-                                'images/argentina.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/argentina.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1.0),
-                          child: Text("Argentina"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1.0),
-                          child: Text("₱20.00"),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            saveRecord(
-                              cornedbeef,
-                              39.75,
-                              Image.asset(
-                                'images/cornedbeef.png',
-                                height: 100,
-                                width: 100,
-                              ),
-                            );
-                          },
-                          child: Image.asset(
-                            'images/cornedbeef.png',
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                        Text("Corned Beef"),
-                        Text("₱39.75"),
                       ],
                     ),
                   ),
                 ],
               ),
               SizedBox(
-                height: 20,
+                height: 30,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Card(
+                          color: Color.fromARGB(255, 69, 56, 56),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                saveRecord(
+                                  canton,
+                                  14,
+                                  Image.asset(
+                                    'images/chilli.png',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'images/chilli.png',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5.0),
+                                    child: Text(
+                                      "Pancit Canton",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5.0),
+                                    child: Text(
+                                      "₱14.00",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                          width: 30,
+                        ),
+                        Card(
+                          color: Color.fromARGB(255, 69, 56, 56),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                saveRecord(
+                                  canton,
+                                  14,
+                                  Image.asset(
+                                    'images/extra.png',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'images/extra.png',
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: Text(
+                                      "Pancit Canton",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 1.0),
+                                    child: Text(
+                                      "₱14.00",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                    width: 60,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    canton,
+                                    14,
+                                    Image.asset(
+                                      'images/sweet.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/sweet.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 1.0),
+                                      child: Text("Pancit Canton",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 1.0),
+                                      child: Text("₱14.00",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    shampoo,
+                                    100,
+                                    Image.asset(
+                                      'images/original.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/original.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Text("Pancit Canton",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12)),
+                                    Text("₱14.00",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: 80,
+                height: 50,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    sanmarino,
+                                    29,
+                                    Image.asset(
+                                      'images/sanmarino.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/sanmarino.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text("San Marino",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text("₱29.00",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                          width: 50,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    century,
+                                    34.50,
+                                    Image.asset(
+                                      'images/century.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/century.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text("Century Tuna",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text("₱34.50",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 60,
+                    height: 80,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    argentina,
+                                    20,
+                                    Image.asset(
+                                      'images/argentina.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/argentina.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 1.0),
+                                      child: Text("Argentina",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 1.0),
+                                      child: Text("₱20.00",
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                          width: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Card(
+                            color: Color.fromARGB(255, 69, 56, 56),
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  saveRecord(
+                                    cornedbeef,
+                                    39.75,
+                                    Image.asset(
+                                      'images/cornedbeef.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      'images/cornedbeef.png',
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                    Text("Corned Beef",
+                                        style: TextStyle(color: Colors.white)),
+                                    Text("₱39.75",
+                                        style: TextStyle(color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 30,
+                width: 50,
               ),
             ],
           ),
@@ -522,13 +800,20 @@ class _DashboardState extends State<Dashboard> {
       shrinkWrap: true,
       itemCount: _shopList.length,
       itemBuilder: (context, index) {
-        return Card(
-          child: ListTile(
-            title: Text(
-              _shopList[index]['order'],
-            ),
-            subtitle: Text(_shopList[index]['price'].toString()),
-            leading: _shopList[index]['image'],
+        return ListTile(
+          title: Text(
+            _shopList[index]['order'],
+          ),
+          subtitle: Text(_shopList[index]['price'].toString()),
+          leading: _shopList[index]['image'],
+          trailing: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              setState(() {
+                total -= _shopList[index]['price']; // Update total
+                _shopList.removeAt(index); // Remove item from list
+              });
+            },
           ),
         );
       },
