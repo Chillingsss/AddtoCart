@@ -69,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('images/pogi.jpg'),
+                backgroundImage: AssetImage("images/${users.getImage()}"),
               ),
               SizedBox(height: 20),
               if (!_editMode) ...[

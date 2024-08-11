@@ -3,17 +3,33 @@ import 'package:project/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+import 'package:project/dashboardCashier.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  String? userLevel = prefs.getString('user_level');
+
+  runApp(MyApp(isLoggedIn: isLoggedIn, userLevel: userLevel));
 }
 
 class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+  final String? userLevel;
+
+  MyApp({required this.isLoggedIn, required this.userLevel});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: isLoggedIn
+          ? (userLevel == 'admin' ? Dashboard() : DashboardCashier())
+          : LoginPage(),
     );
   }
 }
@@ -34,8 +50,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sync'),
-        backgroundColor: Color.fromARGB(255, 155, 155, 155),
+        title: Text('PITOK STORE'),
+        backgroundColor: Color.fromARGB(255, 168, 168, 168),
       ),
       body: Form(
         key: _formKey,
@@ -45,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
             17,
             16,
             16,
-          ), // Set your desired background color here
+          ),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -54,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Card(
-                    color: Color.fromARGB(255, 155, 155, 155),
+                    color: Color.fromARGB(255, 165, 164, 164),
                     elevation: 5.0,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -141,56 +157,63 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void login() async {
-    String url = "http://localhost/api/login.php";
+    String url = "http://localhost/flutter/user.php";
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded"
+    };
+
+    Map<String, dynamic> body = {
+      'operation': 'loginUser',
+      'json': jsonEncode({
+        'loginUsername': usernameController.text,
+        'loginPassword': passwordController.text,
+      }),
+    };
 
     try {
-      final Map<String, dynamic> queryParams = {
-        'username': usernameController.text,
-        'password': passwordController.text,
-      };
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
 
-      http.Response response =
-          await http.get(Uri.parse(url).replace(queryParameters: queryParams));
-      print("eyy" + response.body);
       if (response.statusCode == 200) {
-        List<dynamic> userList = jsonDecode(response.body);
+        var responseBody = jsonDecode(response.body);
 
-        if (userList.isNotEmpty) {
-          var user = userList[0];
-          users.SetInformation(
-            user['firstname'],
-            user['middlename'],
-            user['lastname'],
-            user['address'],
-            user['email'],
-            user['cpnumber'].toString(),
-            user['username'],
-          );
+        if (responseBody['status'] == 1) {
+          var user = responseBody['data'][0];
 
-          print("userFirstname: " + users.getFirstName());
-          print("userMiddlename: " + user['middlename']);
-          print("userLastname: " + user['lastname']);
-          print("userAddress: " + user['address']);
-          print("userEmail: " + user['email']);
-          print("userCpnumber: " +
-              user['cpnumber'].toString()); // Convert to string
-          print("userUsername: " + user['username']);
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Dashboard()));
+          // Save login data to SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('user_level', user['user_level']);
+          await prefs.setString('user_fullName', user['user_fullName']);
+          await prefs.setString('user_username', user['user_username']);
+
+          // Navigate based on user level
+          if (user['user_level'] == 'admin') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard()),
+            );
+          } else if (user['user_level'] == 'user') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => DashboardCashier()),
+            );
+          }
         } else {
-          print("Invalid username or password");
           setState(() {
-            _msg = "Invalid username or password";
+            _msg = responseBody['message'];
           });
         }
       } else {
-        print("Invalid username or password");
         setState(() {
           _msg = "Invalid username or password";
         });
       }
     } catch (error) {
-      print("Error occurred. Please try again later." + error.toString());
+      print("Error: $error");
       setState(() {
         _msg = "Error occurred. Please try again later.";
       });
@@ -258,7 +281,7 @@ class _SignupScreenState extends State<Signup> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    MyApp()), // Replace MyApp with your main.dart widget
+                    LoginPage()), // Replace MyApp with your main.dart widget
           );
         });
       } else {
@@ -460,7 +483,7 @@ class _SignupScreenState extends State<Signup> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MyApp()),
+                                    builder: (context) => LoginPage()),
                               );
                             },
                             icon: Icon(Icons.login),

@@ -6,9 +6,10 @@ class Users {
   static String email = "";
   static String cpnumber = "";
   static String username = "";
+  static String image = "";
 
-  void SetInformation(
-      firstName, middleName, lastName, address, email, cpNumber, username) {
+  void SetInformation(firstName, middleName, lastName, address, email, cpNumber,
+      username, image) {
     Users.firstname = firstName;
     Users.middlename = middleName;
     Users.lastname = lastName;
@@ -16,6 +17,7 @@ class Users {
     Users.email = email;
     Users.cpnumber = cpNumber;
     Users.username = username;
+    Users.image = image;
   }
 
   String getFirstName() {
@@ -44,6 +46,14 @@ class Users {
 
   String getUsername() {
     return username;
+  }
+
+  String getUserFullName() {
+    return firstname + " " + middlename + " " + lastname;
+  }
+
+  String getImage() {
+    return image;
   }
 
   void clearInformation() {

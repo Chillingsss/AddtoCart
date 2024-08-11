@@ -4,6 +4,8 @@ import 'package:project/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:project/store.dart';
 import 'package:project/main.dart';
+import 'package:project/User.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -21,6 +23,8 @@ class _DashboardState extends State<Dashboard> {
   String century = "Century";
   String sanmarino = "San Marino";
   String cornedbeef = "Corned Beef";
+
+  Users users = Users();
 
   double total = 0;
 
@@ -70,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
             child: IconButton(
               icon: Icon(Icons.exit_to_app, size: 30),
               onPressed: () {
-                _logout();
+                logout();
               },
             ),
           ),
@@ -118,7 +122,18 @@ class _DashboardState extends State<Dashboard> {
       drawer: Drawer(
         child: ListView(
           children: [
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.black,
+              ),
+              accountName: Text(users.getUserFullName()),
+              accountEmail: Text(users.getEmail()),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: AssetImage("images/${users.getImage()}"),
+              ),
+            ),
             ListTile(
+              leading: Icon(Icons.person), // Add an icon
               title: Text('Profile'),
               onTap: () {
                 Navigator.pop(context);
@@ -820,11 +835,15 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  void _logout() {
+  void logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    // Navigate back to the login screen
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => MyApp()),
-      (route) => false,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
     );
   }
 }
