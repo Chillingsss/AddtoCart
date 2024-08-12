@@ -2,6 +2,7 @@ import 'package:project/User.dart';
 import 'package:project/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:project/dashboardAdmin.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: isLoggedIn
-          ? (userLevel == 'admin' ? Dashboard() : DashboardCashier())
+          ? (userLevel == 'admin' ? DashboardAdmin() : DashboardCashier())
           : LoginPage(),
     );
   }
@@ -194,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
           if (user['user_level'] == 'admin') {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Dashboard()),
+              MaterialPageRoute(builder: (context) => DashboardAdmin()),
             );
           } else if (user['user_level'] == 'user') {
             Navigator.push(
