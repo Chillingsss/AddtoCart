@@ -1,3 +1,16 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.cursorBlinking": "smooth",
+    "files.autoSave": "afterDelay",
+    "editor.renderWhitespace": "none",
+    "editor.cursorStyle": "line",
+    "editor.insertSpaces": true,
+    "editor.autoClosingBrackets": "languageDefined",
+    "editor.codeActionWidget.showHeaders": true,
+    "editor.smartSelect.selectLeadingAndTrailingWhitespace": true,
+    "editor.multiCursorMergeOverlapping": false,
+    "workbench.editor.highlightModifiedTabs": true,
+    "editor.trimAutoWhitespace": false,
+    "diffEditor.ignoreTrimWhitespace": false
 }

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
+import 'package:project/main.dart';
 import 'dart:math' as math;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardAdmin extends StatefulWidget {
   const DashboardAdmin({super.key});
@@ -23,11 +25,38 @@ class _DashboardAdminState extends State<DashboardAdmin> {
 
   @override
   void initState() {
+    checkLoginStatus();
+
     super.initState();
     _fetchSalesData();
     _fetchThisMonthSales();
     _fetchLastMonthSales();
     _fetchSalesMonthData();
+  }
+
+  void checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (!isLoggedIn) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                LoginPage()), // Adjust to the actual LoginPage
+        (route) => false,
+      );
+    }
+  }
+
+  void logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    // Navigate back to the login screen
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   Future<void> _fetchSalesData() async {
@@ -195,6 +224,7 @@ class _DashboardAdminState extends State<DashboardAdmin> {
     };
     return monthMap[month] ?? month;
   }
+  
 
   Color _getColorForIndex(int index) {
     const List<Color> colors = [
@@ -223,7 +253,7 @@ class _DashboardAdminState extends State<DashboardAdmin> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              // Logout logic here
+              logout();
             },
           ),
         ],
