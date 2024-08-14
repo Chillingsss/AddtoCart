@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
+import 'package:project/getProduct/getProduct.dart';
+import 'package:project/lineChart/lineChart.dart';
 import 'package:project/main.dart';
 import 'dart:math' as math;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,9 +17,26 @@ class DashboardAdmin extends StatefulWidget {
   _DashboardAdminState createState() => _DashboardAdminState();
 }
 
+class Product {
+  final String name;
+  final String barcode;
+  final double price;
+  final int stocks;
+  final String category;
+
+  Product({
+    required this.name,
+    required this.barcode,
+    required this.price,
+    required this.stocks,
+    required this.category,
+  });
+}
+
 class _DashboardAdminState extends State<DashboardAdmin> {
   List<FlSpot> _lineChartSpots = [];
   List<BarChartGroupData> _chartData = [];
+  // List<Product> _products = [];
   List<String> _productNames = [];
   List<String> _monthLabels = [];
   double thisMonthSales = 0.0;
@@ -32,7 +51,41 @@ class _DashboardAdminState extends State<DashboardAdmin> {
     _fetchThisMonthSales();
     _fetchLastMonthSales();
     _fetchSalesMonthData();
+    // _fetchProducts();
   }
+
+  // Future<void> _fetchProducts() async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://localhost/flutter/products.php'),
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //       body: {
+  //         'operation': 'getAllProduct',
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body) as List<dynamic>;
+  //       setState(() {
+  //         _products = data.map<Product>((item) {
+  //           return Product(
+  //             name: item['prod_name'].toString(),
+  //             barcode: item['prod_id'].toString(),
+  //             price: double.parse(item['prod_price'].toString()),
+  //             stocks: int.parse(item['prod_stocks'].toString()),
+  //             category: item['prod_category'].toString(),
+  //           );
+  //         }).toList();
+  //       });
+  //     } else {
+  //       print('Failed to load products');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching products: $e');
+  //   }
+  // }
 
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -75,7 +128,7 @@ class _DashboardAdminState extends State<DashboardAdmin> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as List<dynamic>;
-        print('Fetched data: $data'); // Log the data
+        print('Fetched data: $data');
 
         setState(() {
           _productNames =
@@ -224,7 +277,6 @@ class _DashboardAdminState extends State<DashboardAdmin> {
     };
     return monthMap[month] ?? month;
   }
-  
 
   Color _getColorForIndex(int index) {
     const List<Color> colors = [
@@ -248,7 +300,7 @@ class _DashboardAdminState extends State<DashboardAdmin> {
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
         backgroundColor: Colors.blueGrey,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -258,89 +310,105 @@ class _DashboardAdminState extends State<DashboardAdmin> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          _chartData.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 212, 212, 212),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        width: 500,
-                        height: 350,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: BarChartWidget(
-                                chartData: _chartData,
-                                productNames: _productNames,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children:
-                                  _productNames.asMap().entries.map((entry) {
-                                int index = entry.key;
-                                String name = entry.value;
-                                return Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 12,
-                                      height: 12,
-                                      color: _getColorForIndex(index),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      name,
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        )),
-                  ),
-                )
-              : const Center(child: CircularProgressIndicator()),
-          Positioned(
-            top: 16,
-            right: 30,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+      body: Container(
+        color: Colors.grey[300], // Set the background color here
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SalesInfoCard(
-                  thisMonthSales: thisMonthSales,
-                  lastMonthSales: lastMonthSales,
+                // Left side with GetProduct
+                Expanded(
+                  flex: 1,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: GetProduct(),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 550, // Adjust the width as needed
-                  height: 200, // Adjust the height as needed
-                  child: LineChartWidget(
-                    spots: _lineChartSpots,
-                    monthLabels: _monthLabels,
+                const SizedBox(width: 20), // Spacer between left and right
+
+                // Right side with Sales Info, Line Chart, and Bar Chart
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      SalesInfoCard(
+                        thisMonthSales: thisMonthSales,
+                        lastMonthSales: lastMonthSales,
+                      ),
+                      const SizedBox(height: 20), // Spacer between elements
+
+                      Container(
+                        width: 500, // Adjust the width as needed
+                        height: 300,
+                        child: LineChartWidget(),
+                      ),
+                      const SizedBox(height: 20), // Spacer between elements
+
+                      if (_chartData.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          width: 500,
+                          height: 320,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: BarChartWidget(
+                                  chartData: _chartData,
+                                  productNames: _productNames,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children:
+                                    _productNames.asMap().entries.map((entry) {
+                                  int index = entry.key;
+                                  String name = entry.value;
+                                  return Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 12,
+                                        height: 12,
+                                        color: _getColorForIndex(index),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        name,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        const Center(child: CircularProgressIndicator()),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -357,6 +425,12 @@ class SalesInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double percentageChange =
+        ((thisMonthSales - lastMonthSales) / lastMonthSales) * 100;
+    String percentageChangeText = (percentageChange >= 0)
+        ? '+${percentageChange.toStringAsFixed(2)}%'
+        : '${percentageChange.toStringAsFixed(2)}%';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -387,6 +461,15 @@ class SalesInfoCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Change: $percentageChangeText',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: (percentageChange >= 0) ? Colors.green : Colors.red,
             ),
           ),
         ],
@@ -462,135 +545,152 @@ class BarChartWidget extends StatelessWidget {
   }
 }
 
-class LineChartWidget extends StatelessWidget {
-  final List<FlSpot> spots;
-  final List<String> monthLabels;
+// class LineChartWidget extends StatelessWidget {
+//   final List<FlSpot> spots;
+//   final List<String> monthLabels;
 
-  LineChartWidget({super.key, required this.spots, required this.monthLabels});
+//   LineChartWidget({super.key, required this.spots, required this.monthLabels});
 
-  @override
-  Widget build(BuildContext context) {
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          drawVerticalLine: true,
-          horizontalInterval:
-              (spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.1) / 5,
-          verticalInterval: 1,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.shade400,
-              strokeWidth: 0.5,
-            );
-          },
-          getDrawingVerticalLine: (value) {
-            return FlLine(
-              color: Colors.grey.shade400,
-              strokeWidth: 0.5,
-            );
-          },
-        ),
-        titlesData: FlTitlesData(
-          leftTitles: SideTitles(
-            showTitles: false,
-            reservedSize: 40,
-          ),
-          bottomTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 40,
-            getTitles: (value) {
-              int index = value.toInt();
-              if (index < monthLabels.length) {
-                return monthLabels[index];
-              } else {
-                return '';
-              }
-            },
-          ),
-          topTitles: SideTitles(showTitles: false),
-          rightTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            interval:
-                (spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.1) /
-                    5,
-            getTitles: (value) {
-              if (value == 0) {
-                return '';
-              }
-              return '${(value / 1000).toStringAsFixed(0)}K';
-            },
-          ),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: Border.all(
-              color: const Color.fromARGB(255, 52, 71, 87), width: 1),
-        ),
-        minX: 0,
-        maxX: (spots.length - 1).toDouble(),
-        minY: 0,
-        maxY: (spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            colors: _getColorForAmount(spots),
-            barWidth: 3,
-            dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(
-              show: true,
-              colors: spots.map((spot) {
-                final currentMonthTotalAmount = spots.last.y;
-                const lowAmountThreshold = 1000; // Adjust this value as needed
-                final middleAmountThreshold = currentMonthTotalAmount / 1;
+//   @override
+//   Widget build(BuildContext context) {
+//     return LineChart(
+//       LineChartData(
+//         backgroundColor: Colors.white, // Background color
+//         borderData: FlBorderData(
+//           show: true, // Show the border
+//           border: Border(
+//             top: BorderSide(
+//               color: Colors.red, // Top border color
+//               width: 2, // Top border width
+//             ),
+//             bottom: BorderSide(
+//               color: Colors.green, // Bottom border color
+//               width: 2, // Bottom border width
+//             ),
+//             left: BorderSide(
+//               color: Colors.blue, // Left border color
+//               width: 2, // Left border width
+//             ),
+//             right: BorderSide(
+//               color: Colors.yellow, // Right border color
+//               width: 2, // Right border width
+//             ),
+//           ),
+//         ),
+//         gridData: FlGridData(
+//           show: true,
+//           drawHorizontalLine: true,
+//           drawVerticalLine: true,
+//           horizontalInterval:
+//               (spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.1) / 5,
+//           verticalInterval: 1,
+//           getDrawingHorizontalLine: (value) {
+//             return FlLine(
+//               color: Colors.grey.shade400,
+//               strokeWidth: 0.5,
+//             );
+//           },
+//           getDrawingVerticalLine: (value) {
+//             return FlLine(
+//               color: Colors.grey.shade400,
+//               strokeWidth: 0.5,
+//             );
+//           },
+//         ),
+//         titlesData: FlTitlesData(
+//           leftTitles: SideTitles(
+//             showTitles: false,
+//             reservedSize: 40,
+//           ),
+//           bottomTitles: SideTitles(
+//             showTitles: true,
+//             reservedSize: 40,
+//             getTitles: (value) {
+//               int index = value.toInt();
+//               if (index < monthLabels.length) {
+//                 return monthLabels[index];
+//               } else {
+//                 return '';
+//               }
+//             },
+//           ),
+//           topTitles: SideTitles(showTitles: false),
+//           rightTitles: SideTitles(
+//             showTitles: true,
+//             reservedSize: 30,
+//             interval:
+//                 (spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.1) /
+//                     5,
+//             getTitles: (value) {
+//               if (value == 0) {
+//                 return '';
+//               }
+//               return '${(value / 1000).toStringAsFixed(0)}K';
+//             },
+//           ),
+//         ),
+//         minX: 0,
+//         maxX: (spots.length - 1).toDouble(),
+//         minY: 0,
+//         maxY: (spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2),
+//         lineBarsData: [
+//           LineChartBarData(
+//             spots: spots,
+//             isCurved: true,
+//             colors: _getColorForAmount(spots),
+//             barWidth: 3,
+//             dotData: FlDotData(show: false),
+//             belowBarData: BarAreaData(
+//               show: true,
+//               colors: spots.map((spot) {
+//                 final currentMonthTotalAmount = spots.last.y;
+//                 const lowAmountThreshold = 1000; // Adjust this value as needed
+//                 final middleAmountThreshold = currentMonthTotalAmount / 1;
 
-                if (spot.y < lowAmountThreshold) {
-                  return const Color.fromARGB(255, 173, 61, 61)
-                      .withOpacity(0.5);
-                } else if (spot.y < middleAmountThreshold) {
-                  return const Color.fromARGB(255, 31, 152, 168)
-                      .withOpacity(0.5);
-                } else {
-                  return const Color.fromARGB(255, 69, 172, 69)
-                      .withOpacity(0.5);
-                }
-              }).toList(),
-            ),
-          ),
-        ],
-        lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: Colors.transparent,
-            getTooltipItems: (spots) {
-              return spots.map((spot) {
-                return LineTooltipItem(
-                  '₱${spot.y.toStringAsFixed(2)}',
-                  const TextStyle(color: Colors.black),
-                );
-              }).toList();
-            },
-          ),
-          handleBuiltInTouches: true,
-        ),
-      ),
-    );
-  }
+//                 if (spot.y < lowAmountThreshold) {
+//                   return const Color.fromARGB(255, 173, 61, 61)
+//                       .withOpacity(0.5);
+//                 } else if (spot.y < middleAmountThreshold) {
+//                   return const Color.fromARGB(255, 31, 152, 168)
+//                       .withOpacity(0.5);
+//                 } else {
+//                   return const Color.fromARGB(255, 69, 172, 69)
+//                       .withOpacity(0.5);
+//                 }
+//               }).toList(),
+//             ),
+//           ),
+//         ],
+//         lineTouchData: LineTouchData(
+//           touchTooltipData: LineTouchTooltipData(
+//             tooltipBgColor: Colors.transparent,
+//             getTooltipItems: (spots) {
+//               return spots.map((spot) {
+//                 return LineTooltipItem(
+//                   '₱${spot.y.toStringAsFixed(2)}',
+//                   const TextStyle(color: Colors.black),
+//                 );
+//               }).toList();
+//             },
+//           ),
+//           handleBuiltInTouches: true,
+//         ),
+//       ),
+//     );
+//   }
 
-  List<Color> _getColorForAmount(List<FlSpot> spots) {
-    final currentMonthTotalAmount = spots.last.y;
-    final lowAmountThreshold = 1000; // Adjust this value as needed
+//   List<Color> _getColorForAmount(List<FlSpot> spots) {
+//     final currentMonthTotalAmount = spots.last.y;
+//     final lowAmountThreshold = 1000; // Adjust this value as needed
 
-    return spots.map((e) {
-      if (e.y < lowAmountThreshold) {
-        return Color.fromARGB(255, 203, 35, 35);
-      } else if (e.y == currentMonthTotalAmount) {
-        return Colors.blue;
-      } else {
-        return Colors.green;
-      }
-    }).toList();
-  }
-}
+//     return spots.map((e) {
+//       if (e.y < lowAmountThreshold) {
+//         return const Color.fromARGB(255, 203, 35, 35);
+//       } else if (e.y == currentMonthTotalAmount) {
+//         return Colors.blue;
+//       } else {
+//         return Colors.green;
+//       }
+//     }).toList();
+//   }
+// }
